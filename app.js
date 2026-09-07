@@ -13,22 +13,22 @@ const pageSummarizer   = document.getElementById('page-summarizer');
 const pageTranslator   = document.getElementById('page-translator');
 
 // ─── DOM 参照: 要約 ──────────────────────────────────
-const summarizerStatus  = document.getElementById('summarizer-status-area');
-const inputText         = document.getElementById('input-text');
-const summarizeBtn      = document.getElementById('summarize-btn');
-const summarizerResult  = document.getElementById('summarizer-result-section');
-const summarizerText    = document.getElementById('summarizer-result-text');
+const summarizerStatus = document.getElementById('summarizer-status-area');
+const inputText        = document.getElementById('input-text');
+const summarizeBtn     = document.getElementById('summarize-btn');
+const summarizerResult = document.getElementById('summarizer-result-section');
+const summarizerText   = document.getElementById('summarizer-result-text');
 
 // 要約設定タブ
-const tabSimpleBtn  = document.getElementById('tab-simple');
-const tabDetailBtn  = document.getElementById('tab-detail');
-const panelSimple   = document.getElementById('panel-simple');
-const panelDetail   = document.getElementById('panel-detail');
+const tabSimpleBtn = document.getElementById('tab-simple');
+const tabDetailBtn = document.getElementById('tab-detail');
+const panelSimple  = document.getElementById('panel-simple');
+const panelDetail  = document.getElementById('panel-detail');
 
 // 詳細設定
-const detailType    = document.getElementById('detail-type');
-const detailFormat  = document.getElementById('detail-format');
-const detailLength  = document.getElementById('detail-length');
+const detailType   = document.getElementById('detail-type');
+const detailFormat = document.getElementById('detail-format');
+const detailLength = document.getElementById('detail-length');
 
 // ─── DOM 参照: 翻訳 ──────────────────────────────────
 const translatorStatus = document.getElementById('translator-status-area');
@@ -50,7 +50,10 @@ function clearStatus(el) {
   el.className = 'status-area';
 }
 
-// ─── グローバルナビ切り替え ──────────────────────────
+// ════════════════════════════════════════════════════
+// グローバルナビ切り替え
+// ════════════════════════════════════════════════════
+
 function activatePage(pageId) {
   const isSummarizer = pageId === 'page-summarizer';
 
@@ -60,6 +63,7 @@ function activatePage(pageId) {
   pageSummarizer.hidden = !isSummarizer;
   pageTranslator.hidden = isSummarizer;
 
+  // 翻訳ページに切り替えたとき API を確認
   if (!isSummarizer) {
     checkTranslatorAvailability();
   }
@@ -72,6 +76,7 @@ navTranslatorBtn.addEventListener('click', () => activatePage('page-translator')
 // 要約
 // ════════════════════════════════════════════════════
 
+// ─── 要約設定タブ切り替え ────────────────────────────
 function activateTab(tabId) {
   const isSimple = tabId === 'tab-simple';
 
@@ -88,6 +93,7 @@ function activateTab(tabId) {
   syncLength(tabId);
 }
 
+// 長さの値をタブ間で同期する
 function syncLength(toTabId) {
   if (toTabId === 'tab-detail') {
     const checked = document.querySelector('input[name="length-simple"]:checked');
@@ -103,39 +109,60 @@ function syncLength(toTabId) {
 tabSimpleBtn.addEventListener('click', () => activateTab('tab-simple'));
 tabDetailBtn.addEventListener('click', () => activateTab('tab-detail'));
 
+// ─── 要約設定値取得 ──────────────────────────────────
 function getSummarizerOptions() {
   if (panelSimple.classList.contains('active')) {
     const checked = document.querySelector('input[name="length-simple"]:checked');
-    return { type: 'key-points', format: 'plain-text', length: checked ? checked.value : 'medium' };
+    return {
+      type:   'key-points',
+      format: 'plain-text',
+      length: checked ? checked.value : 'medium',
+    };
   }
-  return { type: detailType.value, format: detailFormat.value, length: detailLength.value };
+  return {
+    type:   detailType.value,
+    format: detailFormat.value,
+    length: detailLength.value,
+  };
 }
 
+// ─── 要約 API 確認 ───────────────────────────────────
 async function checkSummarizerAvailability() {
   if (!('Summarizer' in self)) {
     showStatus(summarizerStatus,
-      '⚠️ このブラウザは Summarizer API に対応していません。Chrome 138 以降をお使いください。', 'error');
+      '⚠️ このブラウザは Summarizer API に対応していません。Chrome 138 以降をお使いください。',
+      'error'
+    );
     return;
   }
   try {
     const availability = await Summarizer.availability();
     if (availability === 'unavailable') {
       showStatus(summarizerStatus,
-        '❌ この環境では Summarizer API を利用できません。必要要件: VRAM 4GB 超 または RAM 16GB 以上 / ストレージ 22GB 以上の空き', 'error');
+        '❌ この環境では Summarizer API を利用できません。' +
+        '必要要件: VRAM 4GB 超 または RAM 16GB 以上 / ストレージ 22GB 以上の空き',
+        'error'
+      );
       return;
     }
     summarizeBtn.disabled = false;
     if (availability === 'downloadable' || availability === 'downloading') {
-      showStatus(summarizerStatus, '⬇️ AI モデルが未ダウンロードです。「要約する」を押すとダウンロードが始まります。', 'warning');
+      showStatus(summarizerStatus,
+        '⬇️ AI モデルが未ダウンロードです。「要約する」を押すとダウンロードが始まります。',
+        'warning'
+      );
     } else {
       showStatus(summarizerStatus, '✅ Summarizer API が利用可能です。', 'success');
       setTimeout(() => clearStatus(summarizerStatus), 2500);
     }
   } catch (err) {
-    showStatus(summarizerStatus, `❌ API の確認中にエラーが発生しました: ${err.message}`, 'error');
+    showStatus(summarizerStatus,
+      `❌ API の確認中にエラーが発生しました: ${err.message}`, 'error'
+    );
   }
 }
 
+// ─── 要約実行 ────────────────────────────────────────
 async function summarize() {
   const text = inputText.value.trim();
   if (!text) {
@@ -153,24 +180,34 @@ async function summarize() {
 
   let summarizer = null;
   try {
+    // フェーズ1: モデルの準備
     summarizer = await Summarizer.create({
-      type: options.type, format: options.format, length: options.length,
+      type:   options.type,
+      format: options.format,
+      length: options.length,
       outputLanguage: 'ja',
       expectedInputLanguages: ['ja', 'en'],
       monitor(m) {
         m.addEventListener('downloadprogress', (e) => {
-          showStatus(summarizerStatus, `⬇️ モデルをダウンロード中... ${Math.round(e.loaded * 100)}%`, 'info');
+          const percent = Math.round(e.loaded * 100);
+          showStatus(summarizerStatus, `⬇️ モデルをダウンロード中... ${percent}%`, 'info');
         });
       },
     });
+
+    // フェーズ2: 推論中
     showStatus(summarizerStatus, '🤖 推論中...', 'info');
     const summary = await summarizer.summarize(text);
+
+    // フェーズ3: 完了
     summarizerText.textContent = summary;
     summarizerResult.hidden = false;
     showStatus(summarizerStatus, '✅ 要約が完了しました。', 'success');
     summarizerResult.scrollIntoView({ behavior: 'smooth', block: 'end' });
   } catch (err) {
-    showStatus(summarizerStatus, `❌ 要約中にエラーが発生しました: ${err.message}`, 'error');
+    showStatus(summarizerStatus,
+      `❌ 要約中にエラーが発生しました: ${err.message}`, 'error'
+    );
   } finally {
     if (summarizer) summarizer.destroy();
     summarizeBtn.disabled = false;
@@ -184,15 +221,19 @@ summarizeBtn.addEventListener('click', summarize);
 // 翻訳
 // ════════════════════════════════════════════════════
 
-// Translator API は 'auto' をサポートしないため 'en' をフォールバックとして使用
+// Translator API は 'auto' をサポートしないため
+// ソースが 'auto' の場合は 'en' をフォールバックとして使用する
 function getEffectiveSourceLang() {
   return sourceLang.value === 'auto' ? 'en' : sourceLang.value;
 }
 
+// ─── 翻訳 API 確認 ───────────────────────────────────
 async function checkTranslatorAvailability() {
   if (!('Translator' in self)) {
     showStatus(translatorStatus,
-      '⚠️ このブラウザは Translator API に対応していません。Chrome 138 以降をお使いください。', 'error');
+      '⚠️ このブラウザは Translator API に対応していません。Chrome 138 以降をお使いください。',
+      'error'
+    );
     translateBtn.disabled = true;
     return;
   }
@@ -200,17 +241,22 @@ async function checkTranslatorAvailability() {
     const src = getEffectiveSourceLang();
     const tgt = targetLang.value;
 
+    // ソースとターゲットが同じ場合は無効
     if (src === tgt) {
       showStatus(translatorStatus, '⚠️ ソース言語と翻訳先が同じです。', 'warning');
       translateBtn.disabled = true;
       return;
     }
 
-    const availability = await Translator.availability({ sourceLanguage: src, targetLanguage: tgt });
+    const availability = await Translator.availability({
+      sourceLanguage: src,
+      targetLanguage: tgt,
+    });
 
     if (availability === 'unavailable') {
       showStatus(translatorStatus,
-        `❌ この言語ペアはこの環境で利用できません。`, 'error');
+        `❌ ${src} → ${tgt} の翻訳はこの環境で利用できません。`, 'error'
+      );
       translateBtn.disabled = true;
       return;
     }
@@ -218,20 +264,27 @@ async function checkTranslatorAvailability() {
     translateBtn.disabled = false;
 
     if (availability === 'downloadable' || availability === 'downloading') {
-      showStatus(translatorStatus, '⬇️ 言語パックが未ダウンロードです。「翻訳する」を押すとダウンロードが始まります。', 'warning');
+      showStatus(translatorStatus,
+        '⬇️ 言語パックが未ダウンロードです。「翻訳する」を押すとダウンロードが始まります。',
+        'warning'
+      );
     } else {
       showStatus(translatorStatus, '✅ Translator API が利用可能です。', 'success');
       setTimeout(() => clearStatus(translatorStatus), 2500);
     }
   } catch (err) {
-    showStatus(translatorStatus, `❌ API の確認中にエラーが発生しました: ${err.message}`, 'error');
+    showStatus(translatorStatus,
+      `❌ API の確認中にエラーが発生しました: ${err.message}`, 'error'
+    );
     translateBtn.disabled = true;
   }
 }
 
+// 言語選択変更時に再確認
 sourceLang.addEventListener('change', checkTranslatorAvailability);
 targetLang.addEventListener('change', checkTranslatorAvailability);
 
+// ─── 翻訳実行 ────────────────────────────────────────
 async function translate() {
   const text = translateInput.value.trim();
   if (!text) {
@@ -251,23 +304,33 @@ async function translate() {
 
   let translator = null;
   try {
+    // フェーズ1: 翻訳器の準備
     translator = await Translator.create({
       sourceLanguage: src,
       targetLanguage: tgt,
       monitor(m) {
         m.addEventListener('downloadprogress', (e) => {
-          showStatus(translatorStatus, `⬇️ 言語パックをダウンロード中... ${Math.round(e.loaded * 100)}%`, 'info');
+          const percent = Math.round(e.loaded * 100);
+          showStatus(translatorStatus,
+            `⬇️ 言語パックをダウンロード中... ${percent}%`, 'info'
+          );
         });
       },
     });
+
+    // フェーズ2: 翻訳中
     showStatus(translatorStatus, '🌐 翻訳中...', 'info');
     const result = await translator.translate(text);
+
+    // フェーズ3: 完了
     translatorText.textContent = result;
     translatorResult.hidden = false;
     showStatus(translatorStatus, '✅ 翻訳が完了しました。', 'success');
     translatorResult.scrollIntoView({ behavior: 'smooth', block: 'end' });
   } catch (err) {
-    showStatus(translatorStatus, `❌ 翻訳中にエラーが発生しました: ${err.message}`, 'error');
+    showStatus(translatorStatus,
+      `❌ 翻訳中にエラーが発生しました: ${err.message}`, 'error'
+    );
   } finally {
     if (translator) translator.destroy();
     translateBtn.disabled = false;

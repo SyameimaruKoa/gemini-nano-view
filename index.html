@@ -20,19 +20,28 @@
     <!-- ─── 要約ページ ─────────────────────────────── -->
     <div id="page-summarizer">
 
+      <!-- API ステータス表示 -->
       <div id="summarizer-status-area" class="status-area" aria-live="polite"></div>
 
+      <!-- 入力エリア -->
       <section class="section">
         <label for="input-text">要約するテキストを入力してください</label>
-        <textarea id="input-text" rows="10" placeholder="ここにテキストを貼り付けてください..." aria-label="要約するテキスト"></textarea>
+        <textarea
+          id="input-text"
+          rows="10"
+          placeholder="ここにテキストを貼り付けてください..."
+          aria-label="要約するテキスト"
+        ></textarea>
       </section>
 
+      <!-- 設定タブ -->
       <section class="section">
         <div class="tab-bar" role="tablist">
           <button class="tab-btn active" role="tab" aria-selected="true"  aria-controls="panel-simple" id="tab-simple" type="button">シンプル</button>
           <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="panel-detail" id="tab-detail" type="button">詳細設定</button>
         </div>
 
+        <!-- シンプルパネル -->
         <div class="tab-panel active" id="panel-simple" role="tabpanel" aria-labelledby="tab-simple">
           <fieldset>
             <legend>要約の長さ</legend>
@@ -44,6 +53,7 @@
           </fieldset>
         </div>
 
+        <!-- 詳細パネル -->
         <div class="tab-panel" id="panel-detail" role="tabpanel" aria-labelledby="tab-detail" hidden>
           <fieldset>
             <legend>詳細設定</legend>
@@ -55,11 +65,13 @@
                 <option value="teaser">teaser（導入文）</option>
                 <option value="headline">headline（見出し）</option>
               </select>
+
               <label for="detail-format">フォーマット</label>
               <select id="detail-format">
                 <option value="plain-text">plain-text（プレーンテキスト）</option>
                 <option value="markdown">markdown（Markdown）</option>
               </select>
+
               <label for="detail-length">長さ</label>
               <select id="detail-length">
                 <option value="short">Short（短め）</option>
@@ -71,10 +83,12 @@
         </div>
       </section>
 
+      <!-- 要約ボタン -->
       <section class="section">
         <button id="summarize-btn" type="button" disabled>要約する</button>
       </section>
 
+      <!-- 結果表示エリア -->
       <section class="section result-section" id="summarizer-result-section" hidden>
         <h2>要約結果</h2>
         <div id="summarizer-result-text" class="result-text" aria-live="polite"></div>
@@ -84,8 +98,10 @@
     <!-- ─── 翻訳ページ ─────────────────────────────── -->
     <div id="page-translator" hidden>
 
+      <!-- API ステータス表示 -->
       <div id="translator-status-area" class="status-area" aria-live="polite"></div>
 
+      <!-- 言語選択 -->
       <section class="section">
         <div class="lang-selector">
           <div class="lang-select-group">
@@ -133,7 +149,9 @@
               <option value="zh-Hant">中国語（繁体）</option>
             </select>
           </div>
+
           <div class="lang-arrow" aria-hidden="true">→</div>
+
           <div class="lang-select-group">
             <label for="target-lang">翻訳先</label>
             <select id="target-lang">
@@ -181,15 +199,23 @@
         </div>
       </section>
 
+      <!-- 入力エリア -->
       <section class="section">
         <label for="translate-input">翻訳するテキストを入力してください</label>
-        <textarea id="translate-input" rows="10" placeholder="ここにテキストを貼り付けてください..." aria-label="翻訳するテキスト"></textarea>
+        <textarea
+          id="translate-input"
+          rows="10"
+          placeholder="ここにテキストを貼り付けてください..."
+          aria-label="翻訳するテキスト"
+        ></textarea>
       </section>
 
+      <!-- 翻訳ボタン -->
       <section class="section">
         <button id="translate-btn" type="button" disabled>翻訳する</button>
       </section>
 
+      <!-- 結果表示エリア -->
       <section class="section result-section" id="translator-result-section" hidden>
         <h2>翻訳結果</h2>
         <div id="translator-result-text" class="result-text" aria-live="polite"></div>
@@ -197,6 +223,7 @@
     </div>
 
   </div>
+
   <script src="app.js"></script>
 </body>
 </html>

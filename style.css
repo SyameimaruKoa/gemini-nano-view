@@ -68,7 +68,7 @@ h1 {
   background: none;
 }
 
-/* セクション間の余白 */
+/* ─── セクション ────────────────────────────────────── */
 .section {
   margin-bottom: 20px;
 }
@@ -134,7 +134,7 @@ legend {
   accent-color: #4a90d9;
 }
 
-/* ボタン */
+/* ─── ボタン ────────────────────────────────────────── */
 button {
   display: inline-block;
   padding: 10px 28px;
@@ -157,7 +157,7 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* ステータスエリア */
+/* ─── ステータスエリア ──────────────────────────────── */
 .status-area {
   padding: 10px 14px;
   border-radius: 4px;
@@ -194,7 +194,7 @@ button:disabled {
   color: #7a5b00;
 }
 
-/* 結果セクション */
+/* ─── 結果セクション ────────────────────────────────── */
 .result-section h2 {
   font-size: 1rem;
   margin-bottom: 10px;
