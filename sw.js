@@ -1,9 +1,9 @@
-/**
+﻿/**
  * Service Worker - Gemini Nano AI Tools
  * アプリシェル（HTML / CSS / JS）をキャッシュしてオフラインで動作させる
  */
 
-const CACHE_NAME = 'ai-tools-v1';
+const CACHE_NAME = 'ai-tools-v2';
 
 // キャッシュするファイル一覧
 const ASSETS = [
