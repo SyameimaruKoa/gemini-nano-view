@@ -365,8 +365,9 @@ button:disabled {
   color: #c0392b;
 }
 
-.release-note {
-  margin-top: 8px;
+.vram-note {
+  margin-top: 6px;
+  margin-bottom: 20px;
   font-size: 0.82rem;
   color: #999;
   line-height: 1.5;

@@ -10,6 +10,7 @@
   <div class="container">
     <h1>✨ Gemini Nano AI Tools</h1>
     <p class="description">Chrome の Built-in AI を使って、テキストの要約・翻訳をオンデバイスで行います。</p>
+    <p class="vram-note">※ Gemini Nano のモデル本体は Chrome がキャッシュするため、解放後も VRAM の使用量はすぐには変化しません。完全に解放するには Chrome を終了してください。</p>
 
     <!-- グローバルナビ -->
     <nav class="global-nav" aria-label="機能切り替え">
@@ -216,7 +217,6 @@
           <button id="translate-btn" type="button" disabled>翻訳する</button>
           <button id="release-btn" type="button" class="release-btn" title="翻訳モデルのインスタンスを解放します">🗑️ モデルを解放</button>
         </div>
-        <p class="release-note">※ Gemini Nano のモデル本体は Chrome がキャッシュするため、解放後も VRAM の使用量はすぐには変化しません。完全に解放するには Chrome を終了してください。</p>
       </section>
 
       <!-- 結果表示エリア -->
