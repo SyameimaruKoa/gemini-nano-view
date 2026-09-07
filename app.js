@@ -227,8 +227,26 @@ function getEffectiveSourceLang() {
   return sourceLang.value === 'auto' ? 'en' : sourceLang.value;
 }
 
+// インスタンスキャッシュ（同じ言語ペアは使い回す）
+let cachedTranslator = null;
+let cachedSrc = null;
+let cachedTgt = null;
+
+// キャッシュを破棄する
+function destroyTranslator() {
+  if (cachedTranslator) {
+    cachedTranslator.destroy();
+    cachedTranslator = null;
+    cachedSrc = null;
+    cachedTgt = null;
+  }
+}
+
 // ─── 翻訳 API 確認 ───────────────────────────────────
 async function checkTranslatorAvailability() {
+  // 言語ペアが変わったらキャッシュを破棄
+  destroyTranslator();
+
   if (!('Translator' in self)) {
     showStatus(translatorStatus,
       '⚠️ このブラウザは Translator API に対応していません。Chrome 138 以降をお使いください。',
@@ -302,25 +320,31 @@ async function translate() {
   translatorText.textContent = '';
   showStatus(translatorStatus, '⏳ 準備中...', 'info');
 
-  let translator = null;
   try {
-    // フェーズ1: 翻訳器の準備
-    translator = await Translator.create({
-      sourceLanguage: src,
-      targetLanguage: tgt,
-      monitor(m) {
-        m.addEventListener('downloadprogress', (e) => {
-          const percent = Math.round(e.loaded * 100);
-          showStatus(translatorStatus,
-            `⬇️ 言語パックをダウンロード中... ${percent}%`, 'info'
-          );
-        });
-      },
-    });
+    // 同じ言語ペアならインスタンスを使い回す
+    if (!cachedTranslator || cachedSrc !== src || cachedTgt !== tgt) {
+      // 古いインスタンスを破棄してから新規作成
+      destroyTranslator();
+
+      cachedTranslator = await Translator.create({
+        sourceLanguage: src,
+        targetLanguage: tgt,
+        monitor(m) {
+          m.addEventListener('downloadprogress', (e) => {
+            const percent = Math.round(e.loaded * 100);
+            showStatus(translatorStatus,
+              `⬇️ 言語パックをダウンロード中... ${percent}%`, 'info'
+            );
+          });
+        },
+      });
+      cachedSrc = src;
+      cachedTgt = tgt;
+    }
 
     // フェーズ2: 翻訳中
     showStatus(translatorStatus, '🌐 翻訳中...', 'info');
-    const result = await translator.translate(text);
+    const result = await cachedTranslator.translate(text);
 
     // フェーズ3: 完了
     translatorText.textContent = result;
@@ -328,11 +352,12 @@ async function translate() {
     showStatus(translatorStatus, '✅ 翻訳が完了しました。', 'success');
     translatorResult.scrollIntoView({ behavior: 'smooth', block: 'end' });
   } catch (err) {
+    // エラー時はキャッシュを破棄して次回クリーンに再作成できるようにする
+    destroyTranslator();
     showStatus(translatorStatus,
       `❌ 翻訳中にエラーが発生しました: ${err.message}`, 'error'
     );
   } finally {
-    if (translator) translator.destroy();
     translateBtn.disabled = false;
     translateBtn.textContent = '翻訳する';
   }
