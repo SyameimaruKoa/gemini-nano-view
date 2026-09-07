@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gemini Nano Summarizer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>📝 Gemini Nano Summarizer</h1>
+    <p class="description">Chrome の Built-in AI（Summarizer API）を使って、テキストを要約します。</p>
+
+    <!-- API ステータス表示 -->
+    <div id="status-area" class="status-area" aria-live="polite"></div>
+
+    <!-- 入力エリア -->
+    <section class="section">
+      <label for="input-text">要約するテキストを入力してください</label>
+      <textarea
+        id="input-text"
+        rows="10"
+        placeholder="ここにテキストを貼り付けてください..."
+        aria-label="要約するテキスト"
+      ></textarea>
+    </section>
+
+    <!-- 設定タブ -->
+    <section class="section">
+      <div class="tab-bar" role="tablist">
+        <button class="tab-btn active" role="tab" aria-selected="true"  aria-controls="panel-simple" id="tab-simple" type="button">シンプル</button>
+        <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="panel-detail" id="tab-detail" type="button">詳細設定</button>
+      </div>
+
+      <!-- シンプルパネル -->
+      <div class="tab-panel active" id="panel-simple" role="tabpanel" aria-labelledby="tab-simple">
+        <fieldset>
+          <legend>要約の長さ</legend>
+          <div class="radio-group">
+            <label><input type="radio" name="length-simple" value="short" /> Short（短め）</label>
+            <label><input type="radio" name="length-simple" value="medium" checked /> Medium（中程度）</label>
+            <label><input type="radio" name="length-simple" value="long" /> Long（長め）</label>
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- 詳細パネル -->
+      <div class="tab-panel" id="panel-detail" role="tabpanel" aria-labelledby="tab-detail" hidden>
+        <fieldset>
+          <legend>詳細設定</legend>
+          <div class="detail-grid">
+            <label for="detail-type">タイプ</label>
+            <select id="detail-type">
+              <option value="key-points">key-points（箇条書き）</option>
+              <option value="tldr">tldr（要点まとめ）</option>
+              <option value="teaser">teaser（導入文）</option>
+              <option value="headline">headline（見出し）</option>
+            </select>
+
+            <label for="detail-format">フォーマット</label>
+            <select id="detail-format">
+              <option value="plain-text">plain-text（プレーンテキスト）</option>
+              <option value="markdown">markdown（Markdown）</option>
+            </select>
+
+            <label for="detail-length">長さ</label>
+            <select id="detail-length">
+              <option value="short">Short（短め）</option>
+              <option value="medium" selected>Medium（中程度）</option>
+              <option value="long">Long（長め）</option>
+            </select>
+          </div>
+        </fieldset>
+      </div>
+    </section>
+
+    <!-- 要約ボタン -->
+    <section class="section">
+      <button id="summarize-btn" type="button" disabled>要約する</button>
+    </section>
+
+    <!-- 結果表示エリア -->
+    <section class="section result-section" id="result-section" hidden>
+      <h2>要約結果</h2>
+      <div id="result-text" class="result-text" aria-live="polite"></div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
