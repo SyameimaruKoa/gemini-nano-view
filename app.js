@@ -378,3 +378,11 @@ translateBtn.addEventListener('click', translate);
 
 // ─── 初期化 ──────────────────────────────────────────
 checkSummarizerAvailability();
+
+
+// ─── Service Worker 登録 ─────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch((err) => {
+    console.warn('Service Worker の登録に失敗しました:', err);
+  });
+}
