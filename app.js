@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Gemini Nano AI Tools
  * Chrome Built-in AI の Summarizer / Translator / Prompt API を使って
  * テキストの要約・翻訳・対話をオンデバイスで行うアプリ
@@ -6,7 +6,8 @@
  * 対応: Chrome 138+ (Summarizer / Translator / LanguageModel グローバル API)
  */
 
-// ─── DOM 参照: グローバルナビ ────────────────────────
+// ─── DOM 参照: グローバルナビ・ヘッダー ────────────────
+const offlineBanner    = document.getElementById('offline-banner');
 const navSummarizerBtn = document.getElementById('nav-summarizer');
 const navTranslatorBtn = document.getElementById('nav-translator');
 const navChatBtn       = document.getElementById('nav-chat');
@@ -506,7 +507,11 @@ async function sendMessage() {
   try {
     const stream = chat.session.promptStreaming(text);
     for await (const chunk of stream) {
-      fullText = chunk; // promptStreaming は累積テキストを返す
+      if (chunk.startsWith(fullText)) {
+        fullText = chunk; // 累積テキストの場合
+      } else {
+        fullText += chunk; // 差分（delta）の場合
+      }
       aiBubble.textContent = fullText;
       scrollChatToBottom();
     }
@@ -536,6 +541,17 @@ chatInputEl.addEventListener('keydown', (e) => {
     sendMessage();
   }
 });
+
+// ─── オフライン状態の監視 ─────────────────────────────
+function updateOnlineStatus() {
+  if (offlineBanner) {
+    offlineBanner.hidden = navigator.onLine;
+  }
+}
+
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
 
 // ─── 初期化 ──────────────────────────────────────────
 checkSummarizerAvailability();
