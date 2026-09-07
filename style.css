@@ -344,3 +344,16 @@ button:disabled {
   color: #4a90d9;
   text-decoration: underline;
 }
+
+/* ─── モデル解放ボタン ──────────────────────────────── */
+.release-btn {
+  margin-left: auto;  /* 右端に寄せる */
+  color: #999;
+  font-size: 0.85rem;
+  padding: 10px 16px;
+}
+
+.release-btn:hover:not(:disabled) {
+  background: none;
+  color: #c0392b;
+}
