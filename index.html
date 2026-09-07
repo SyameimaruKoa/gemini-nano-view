@@ -15,7 +15,6 @@
     <nav class="global-nav" aria-label="機能切り替え">
       <button class="nav-btn active" id="nav-summarizer" type="button" aria-controls="page-summarizer">📝 要約</button>
       <button class="nav-btn"        id="nav-translator" type="button" aria-controls="page-translator">🌐 翻訳</button>
-      <button class="nav-btn release-btn" id="release-btn" type="button" title="読み込み済みのモデルインスタンスをすべて解放します">🗑️ モデルを解放</button>
     </nav>
 
     <!-- ─── 要約ページ ─────────────────────────────── -->
@@ -213,7 +212,11 @@
 
       <!-- 翻訳ボタン -->
       <section class="section">
-        <button id="translate-btn" type="button" disabled>翻訳する</button>
+        <div class="action-row">
+          <button id="translate-btn" type="button" disabled>翻訳する</button>
+          <button id="release-btn" type="button" class="release-btn" title="翻訳モデルのインスタンスを解放します">🗑️ モデルを解放</button>
+        </div>
+        <p class="release-note">※ Gemini Nano のモデル本体は Chrome がキャッシュするため、解放後も VRAM の使用量はすぐには変化しません。完全に解放するには Chrome を終了してください。</p>
       </section>
 
       <!-- 結果表示エリア -->

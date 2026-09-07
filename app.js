@@ -77,13 +77,8 @@ const releaseBtn = document.getElementById('release-btn');
 
 function releaseAllModels() {
   destroyTranslator();
-  showStatus(translatorStatus, '', '');  // 翻訳ステータスをクリア
-  clearStatus(translatorStatus);
-
-  // 一時的にフィードバックを表示（ナビ付近なのでどちらのページでも見える）
-  const currentStatus = pageSummarizer.hidden ? translatorStatus : summarizerStatus;
-  showStatus(currentStatus, '🗑️ モデルを解放しました。', 'success');
-  setTimeout(() => clearStatus(currentStatus), 2500);
+  showStatus(translatorStatus, '🗑️ 翻訳モデルを解放しました。', 'success');
+  setTimeout(() => clearStatus(translatorStatus), 2500);
 }
 
 releaseBtn.addEventListener('click', releaseAllModels);
