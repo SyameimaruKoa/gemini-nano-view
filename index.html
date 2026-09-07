@@ -3,89 +3,200 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gemini Nano Summarizer</title>
+  <title>Gemini Nano AI Tools</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>📝 Gemini Nano Summarizer</h1>
-    <p class="description">Chrome の Built-in AI（Summarizer API）を使って、テキストを要約します。</p>
+    <h1>✨ Gemini Nano AI Tools</h1>
+    <p class="description">Chrome の Built-in AI を使って、テキストの要約・翻訳をオンデバイスで行います。</p>
 
-    <!-- API ステータス表示 -->
-    <div id="status-area" class="status-area" aria-live="polite"></div>
+    <!-- グローバルナビ -->
+    <nav class="global-nav" aria-label="機能切り替え">
+      <button class="nav-btn active" id="nav-summarizer" type="button" aria-controls="page-summarizer">📝 要約</button>
+      <button class="nav-btn"        id="nav-translator" type="button" aria-controls="page-translator">🌐 翻訳</button>
+    </nav>
 
-    <!-- 入力エリア -->
-    <section class="section">
-      <label for="input-text">要約するテキストを入力してください</label>
-      <textarea
-        id="input-text"
-        rows="10"
-        placeholder="ここにテキストを貼り付けてください..."
-        aria-label="要約するテキスト"
-      ></textarea>
-    </section>
+    <!-- ─── 要約ページ ─────────────────────────────── -->
+    <div id="page-summarizer">
 
-    <!-- 設定タブ -->
-    <section class="section">
-      <div class="tab-bar" role="tablist">
-        <button class="tab-btn active" role="tab" aria-selected="true"  aria-controls="panel-simple" id="tab-simple" type="button">シンプル</button>
-        <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="panel-detail" id="tab-detail" type="button">詳細設定</button>
-      </div>
+      <div id="summarizer-status-area" class="status-area" aria-live="polite"></div>
 
-      <!-- シンプルパネル -->
-      <div class="tab-panel active" id="panel-simple" role="tabpanel" aria-labelledby="tab-simple">
-        <fieldset>
-          <legend>要約の長さ</legend>
-          <div class="radio-group">
-            <label><input type="radio" name="length-simple" value="short" /> Short（短め）</label>
-            <label><input type="radio" name="length-simple" value="medium" checked /> Medium（中程度）</label>
-            <label><input type="radio" name="length-simple" value="long" /> Long（長め）</label>
+      <section class="section">
+        <label for="input-text">要約するテキストを入力してください</label>
+        <textarea id="input-text" rows="10" placeholder="ここにテキストを貼り付けてください..." aria-label="要約するテキスト"></textarea>
+      </section>
+
+      <section class="section">
+        <div class="tab-bar" role="tablist">
+          <button class="tab-btn active" role="tab" aria-selected="true"  aria-controls="panel-simple" id="tab-simple" type="button">シンプル</button>
+          <button class="tab-btn"        role="tab" aria-selected="false" aria-controls="panel-detail" id="tab-detail" type="button">詳細設定</button>
+        </div>
+
+        <div class="tab-panel active" id="panel-simple" role="tabpanel" aria-labelledby="tab-simple">
+          <fieldset>
+            <legend>要約の長さ</legend>
+            <div class="radio-group">
+              <label><input type="radio" name="length-simple" value="short" /> Short（短め）</label>
+              <label><input type="radio" name="length-simple" value="medium" checked /> Medium（中程度）</label>
+              <label><input type="radio" name="length-simple" value="long" /> Long（長め）</label>
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="tab-panel" id="panel-detail" role="tabpanel" aria-labelledby="tab-detail" hidden>
+          <fieldset>
+            <legend>詳細設定</legend>
+            <div class="detail-grid">
+              <label for="detail-type">タイプ</label>
+              <select id="detail-type">
+                <option value="key-points">key-points（箇条書き）</option>
+                <option value="tldr">tldr（要点まとめ）</option>
+                <option value="teaser">teaser（導入文）</option>
+                <option value="headline">headline（見出し）</option>
+              </select>
+              <label for="detail-format">フォーマット</label>
+              <select id="detail-format">
+                <option value="plain-text">plain-text（プレーンテキスト）</option>
+                <option value="markdown">markdown（Markdown）</option>
+              </select>
+              <label for="detail-length">長さ</label>
+              <select id="detail-length">
+                <option value="short">Short（短め）</option>
+                <option value="medium" selected>Medium（中程度）</option>
+                <option value="long">Long（長め）</option>
+              </select>
+            </div>
+          </fieldset>
+        </div>
+      </section>
+
+      <section class="section">
+        <button id="summarize-btn" type="button" disabled>要約する</button>
+      </section>
+
+      <section class="section result-section" id="summarizer-result-section" hidden>
+        <h2>要約結果</h2>
+        <div id="summarizer-result-text" class="result-text" aria-live="polite"></div>
+      </section>
+    </div>
+
+    <!-- ─── 翻訳ページ ─────────────────────────────── -->
+    <div id="page-translator" hidden>
+
+      <div id="translator-status-area" class="status-area" aria-live="polite"></div>
+
+      <section class="section">
+        <div class="lang-selector">
+          <div class="lang-select-group">
+            <label for="source-lang">ソース言語</label>
+            <select id="source-lang">
+              <option value="auto" selected>自動検出</option>
+              <option value="ar">アラビア語</option>
+              <option value="bg">ブルガリア語</option>
+              <option value="bn">ベンガル語</option>
+              <option value="cs">チェコ語</option>
+              <option value="da">デンマーク語</option>
+              <option value="de">ドイツ語</option>
+              <option value="el">ギリシャ語</option>
+              <option value="en">英語</option>
+              <option value="es">スペイン語</option>
+              <option value="fi">フィンランド語</option>
+              <option value="fr">フランス語</option>
+              <option value="he">ヘブライ語</option>
+              <option value="hi">ヒンディー語</option>
+              <option value="hr">クロアチア語</option>
+              <option value="hu">ハンガリー語</option>
+              <option value="id">インドネシア語</option>
+              <option value="it">イタリア語</option>
+              <option value="ja">日本語</option>
+              <option value="kn">カンナダ語</option>
+              <option value="ko">韓国語</option>
+              <option value="lt">リトアニア語</option>
+              <option value="mr">マラーティー語</option>
+              <option value="nl">オランダ語</option>
+              <option value="no">ノルウェー語</option>
+              <option value="pl">ポーランド語</option>
+              <option value="pt">ポルトガル語</option>
+              <option value="ro">ルーマニア語</option>
+              <option value="ru">ロシア語</option>
+              <option value="sk">スロバキア語</option>
+              <option value="sl">スロベニア語</option>
+              <option value="sv">スウェーデン語</option>
+              <option value="ta">タミル語</option>
+              <option value="te">テルグ語</option>
+              <option value="th">タイ語</option>
+              <option value="tr">トルコ語</option>
+              <option value="uk">ウクライナ語</option>
+              <option value="vi">ベトナム語</option>
+              <option value="zh">中国語（簡体）</option>
+              <option value="zh-Hant">中国語（繁体）</option>
+            </select>
           </div>
-        </fieldset>
-      </div>
-
-      <!-- 詳細パネル -->
-      <div class="tab-panel" id="panel-detail" role="tabpanel" aria-labelledby="tab-detail" hidden>
-        <fieldset>
-          <legend>詳細設定</legend>
-          <div class="detail-grid">
-            <label for="detail-type">タイプ</label>
-            <select id="detail-type">
-              <option value="key-points">key-points（箇条書き）</option>
-              <option value="tldr">tldr（要点まとめ）</option>
-              <option value="teaser">teaser（導入文）</option>
-              <option value="headline">headline（見出し）</option>
-            </select>
-
-            <label for="detail-format">フォーマット</label>
-            <select id="detail-format">
-              <option value="plain-text">plain-text（プレーンテキスト）</option>
-              <option value="markdown">markdown（Markdown）</option>
-            </select>
-
-            <label for="detail-length">長さ</label>
-            <select id="detail-length">
-              <option value="short">Short（短め）</option>
-              <option value="medium" selected>Medium（中程度）</option>
-              <option value="long">Long（長め）</option>
+          <div class="lang-arrow" aria-hidden="true">→</div>
+          <div class="lang-select-group">
+            <label for="target-lang">翻訳先</label>
+            <select id="target-lang">
+              <option value="ar">アラビア語</option>
+              <option value="bg">ブルガリア語</option>
+              <option value="bn">ベンガル語</option>
+              <option value="cs">チェコ語</option>
+              <option value="da">デンマーク語</option>
+              <option value="de">ドイツ語</option>
+              <option value="el">ギリシャ語</option>
+              <option value="en">英語</option>
+              <option value="es">スペイン語</option>
+              <option value="fi">フィンランド語</option>
+              <option value="fr">フランス語</option>
+              <option value="he">ヘブライ語</option>
+              <option value="hi">ヒンディー語</option>
+              <option value="hr">クロアチア語</option>
+              <option value="hu">ハンガリー語</option>
+              <option value="id">インドネシア語</option>
+              <option value="it">イタリア語</option>
+              <option value="ja" selected>日本語</option>
+              <option value="kn">カンナダ語</option>
+              <option value="ko">韓国語</option>
+              <option value="lt">リトアニア語</option>
+              <option value="mr">マラーティー語</option>
+              <option value="nl">オランダ語</option>
+              <option value="no">ノルウェー語</option>
+              <option value="pl">ポーランド語</option>
+              <option value="pt">ポルトガル語</option>
+              <option value="ro">ルーマニア語</option>
+              <option value="ru">ロシア語</option>
+              <option value="sk">スロバキア語</option>
+              <option value="sl">スロベニア語</option>
+              <option value="sv">スウェーデン語</option>
+              <option value="ta">タミル語</option>
+              <option value="te">テルグ語</option>
+              <option value="th">タイ語</option>
+              <option value="tr">トルコ語</option>
+              <option value="uk">ウクライナ語</option>
+              <option value="vi">ベトナム語</option>
+              <option value="zh">中国語（簡体）</option>
+              <option value="zh-Hant">中国語（繁体）</option>
             </select>
           </div>
-        </fieldset>
-      </div>
-    </section>
+        </div>
+      </section>
 
-    <!-- 要約ボタン -->
-    <section class="section">
-      <button id="summarize-btn" type="button" disabled>要約する</button>
-    </section>
+      <section class="section">
+        <label for="translate-input">翻訳するテキストを入力してください</label>
+        <textarea id="translate-input" rows="10" placeholder="ここにテキストを貼り付けてください..." aria-label="翻訳するテキスト"></textarea>
+      </section>
 
-    <!-- 結果表示エリア -->
-    <section class="section result-section" id="result-section" hidden>
-      <h2>要約結果</h2>
-      <div id="result-text" class="result-text" aria-live="polite"></div>
-    </section>
+      <section class="section">
+        <button id="translate-btn" type="button" disabled>翻訳する</button>
+      </section>
+
+      <section class="section result-section" id="translator-result-section" hidden>
+        <h2>翻訳結果</h2>
+        <div id="translator-result-text" class="result-text" aria-live="polite"></div>
+      </section>
+    </div>
+
   </div>
-
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-/* ベースリセット */
+﻿/* ベースリセット */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -32,7 +32,40 @@ h1 {
 .description {
   color: #666;
   font-size: 0.9rem;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+}
+
+/* ─── グローバルナビ ────────────────────────────────── */
+.global-nav {
+  display: flex;
+  gap: 0;
+  border-bottom: 3px solid #ddd;
+  margin-bottom: 28px;
+}
+
+.nav-btn {
+  background: none;
+  color: #666;
+  border: none;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  padding: 10px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: -3px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.nav-btn:hover:not(:disabled) {
+  background: none;
+  color: #4a90d9;
+}
+
+.nav-btn.active {
+  color: #4a90d9;
+  border-bottom-color: #4a90d9;
+  background: none;
 }
 
 /* セクション間の余白 */
@@ -130,7 +163,7 @@ button:disabled {
   border-radius: 4px;
   font-size: 0.9rem;
   margin-bottom: 20px;
-  display: none; /* JS で表示 */
+  display: none;
 }
 
 .status-area.info {
@@ -179,8 +212,7 @@ button:disabled {
   min-height: 80px;
 }
 
-
-/* タブバー */
+/* ─── 設定タブ ──────────────────────────────────────── */
 .tab-bar {
   display: flex;
   gap: 0;
@@ -221,78 +253,6 @@ button:disabled {
   padding: 16px;
 }
 
-/* 詳細設定グリッド */
-.detail-grid {
-  display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 10px 16px;
-  align-items: center;
-}
-
-.detail-grid label {
-  font-weight: 600;
-  margin-bottom: 0;
-  font-size: 0.9rem;
-}
-
-.detail-grid select {
-  width: 100%;
-  padding: 6px 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  font-family: inherit;
-  background: #fafafa;
-  cursor: pointer;
-}
-
-.detail-grid select:focus {
-  outline: none;
-  border-color: #4a90d9;
-  background: #fff;
-}
-
-/* ─── タブバー ─────────────────────────────────────── */
-.tab-bar {
-  display: flex;
-  gap: 0;
-  border-bottom: 2px solid #ddd;
-  margin-bottom: 0;
-}
-
-.tab-btn {
-  background: none;
-  color: #666;
-  border: none;
-  border-bottom: 2px solid transparent;
-  border-radius: 0;
-  padding: 8px 20px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  margin-bottom: -2px;
-  transition: color 0.15s, border-color 0.15s;
-}
-
-.tab-btn:hover:not(:disabled) {
-  background: none;
-  color: #4a90d9;
-}
-
-.tab-btn.active {
-  color: #4a90d9;
-  border-bottom-color: #4a90d9;
-  background: none;
-}
-
-/* ─── タブパネル ────────────────────────────────────── */
-.tab-panel {
-  border: 1px solid #ddd;
-  border-top: none;
-  border-radius: 0 0 4px 4px;
-  padding: 16px;
-}
-
 /* ─── 詳細設定グリッド ──────────────────────────────── */
 .detail-grid {
   display: grid;
@@ -322,4 +282,47 @@ button:disabled {
   outline: none;
   border-color: #4a90d9;
   background: #fff;
+}
+
+/* ─── 言語選択（翻訳） ──────────────────────────────── */
+.lang-selector {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.lang-select-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lang-select-group label {
+  margin-bottom: 0;
+  font-size: 0.9rem;
+}
+
+.lang-select-group select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: #fafafa;
+  cursor: pointer;
+}
+
+.lang-select-group select:focus {
+  outline: none;
+  border-color: #4a90d9;
+  background: #fff;
+}
+
+.lang-arrow {
+  font-size: 1.4rem;
+  color: #999;
+  padding-bottom: 8px;
+  flex-shrink: 0;
 }
