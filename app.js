@@ -317,7 +317,10 @@ async function loadChatsFromStorage() {
 async function createSession(initialMessages = []) {
     const initPrompts = [
         { role: 'system', content: 'You are a helpful and friendly assistant. Always respond in the same language as the user\'s message. If the user writes in Japanese, respond in Japanese.' },
-        ...initialMessages.map(({ role, content }) => ({ role, content })),
+        ...initialMessages.map(({ role, content }) => ({
+            role: (role === 'assistant' || role === 'model') ? 'assistant' : role,
+            content: content
+        })),
     ];
 
     const session = await LanguageModel.create({
@@ -492,7 +495,6 @@ async function sendMessage() {
     renderBubble('user', text);
     scrollChatToBottom();
 
-    // 最初のメッセージからタイトルを自動設定
     if (chat.messages.length === 1) {
         const title = text.slice(0, 20) + (text.length > 20 ? '…' : '');
         chat.title = title;
@@ -505,6 +507,10 @@ async function sendMessage() {
 
     let fullText = '';
     try {
+        if (chat.session) {
+            chat.session.destroy();
+        }
+        chat.session = await createSession(chat.messages.slice(0, -1));
         fullText = await chat.session.prompt(text);
         aiBubble.textContent = fullText;
         scrollChatToBottom();
