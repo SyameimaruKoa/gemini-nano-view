@@ -3,7 +3,7 @@
  * アプリシェル（HTML / CSS / JS）をキャッシュしてオフラインで動作させる
  */
 
-const CACHE_NAME = 'ai-tools-v3';
+const CACHE_NAME = 'ai-tools-v4';
 
 // キャッシュするファイル一覧
 const ASSETS = [
