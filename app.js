@@ -484,7 +484,8 @@ function scrollChatToBottom() {
 async function sendMessage() {
     const text = chatInputEl.value.trim();
     if (!text || !activeChatId) return;
-    const chat = chats.get(activeChatId);
+    const chatId = activeChatId;
+    const chat = chats.get(chatId);
     if (!chat) return;
 
     chatInputEl.value = '';
@@ -498,7 +499,7 @@ async function sendMessage() {
     if (chat.messages.length === 1) {
         const title = text.slice(0, 20) + (text.length > 20 ? '…' : '');
         chat.title = title;
-        updateSidebarTitle(activeChatId, title);
+        updateSidebarTitle(chatId, title);
     }
 
     const aiBubble = renderBubble('ai', '');
@@ -507,14 +508,14 @@ async function sendMessage() {
 
     let fullText = '';
     try {
-        if (chat.session) {
-            chat.session.destroy();
+        if (!chat.session) {
+            chat.session = await createSession(chat.messages.slice(0, -1));
         }
-        chat.session = await createSession(chat.messages.slice(0, -1));
         fullText = await chat.session.prompt(text);
         aiBubble.textContent = fullText;
         scrollChatToBottom();
     } catch (err) {
+        chat.messages.pop();
         aiBubble.textContent = `エラー: ${err.message}`;
         showStatus(chatStatusEl, `❌ 応答中にエラーが発生しました: ${err.message}`, 'error');
     } finally {
